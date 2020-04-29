@@ -1,5 +1,5 @@
 import pymysql
-from flask import Flask, render_template, g, session, redirect, url_for, request
+from flask import Flask, render_template, g, session, redirect, url_for, request, flash
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ThisIsTheKey'
@@ -25,6 +25,7 @@ def Sai_a_r(response):
     g.db.close()
     return response
 
+
 @app.route('/')
 def show_todo_list():
     if not session.get('logged_in'):
@@ -42,19 +43,21 @@ def login():
     error = None
     if request.method == 'POST':
         if request.form['username'] != app.config['USERNAME']:
-            error = 'Invalid username'
+            flash('Invalid username')
         elif request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid password'
+            flash('Invalid password')
         else:
             session['logged_in'] = True
+            flash('you have logged in!')
             return redirect(url_for('show_todo_list'))
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    flash('you have logout!')
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=5000, debug=False)
-	# app.run(host='0.0.0.0', port=5000, debug=True)
+	# app.run(host='0.0.0.0', port=5000, debug=False)
+	app.run(host='0.0.0.0', port=5000, debug=True)
